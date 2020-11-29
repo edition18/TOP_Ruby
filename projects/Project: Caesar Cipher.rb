@@ -1,4 +1,3 @@
-
 def caesar_cipher(string, shift)
   # the alphabet in ASCII starts with 97 for lower case a
   # the last alphabet lower case z is 122
@@ -17,8 +16,8 @@ def caesar_cipher(string, shift)
     i = i + 1    
   end
 
-  result = array.map{|c| c.chr}.join('')
-  puts result
+  puts result = array.map{|c| c.chr}.join('')
+  
 end
 
 caesar_cipher("Hello!!!!!!", 3)
