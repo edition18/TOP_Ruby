@@ -11,7 +11,7 @@ end
 class Game
   attr_accessor :guess_count, :board
   def initialize  
-    @colors = ["Blue","Green","Red","Orange"]
+    @colors = ["Blue","Green","Red","Orange","Teal","Purple"]
     @answer = generate_answer
     @guess_count = 0
     @board = Array.new()
@@ -19,7 +19,27 @@ class Game
   end
 
   def play
+    print "Human Guess Pick 1 , else 2 for creator"
     
+    loop do
+      input = gets.chomp.to_i
+
+      if input == 1 
+        human_guesser
+        return
+      elsif input == 2
+        computer_player
+        return
+      else
+        print "please choose again"
+      end
+    end
+  end
+
+  def computer_player
+    answers_perm = @colors.repeated_permutation(4).to_a
+    first_guess = ["Blue","Blue","Green","Green"]
+
   end
 
 
