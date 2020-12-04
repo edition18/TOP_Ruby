@@ -28,6 +28,7 @@ class Game
         human_guesser
         return
       elsif input == 2
+        set_answer
         computer_player
         return
       else
@@ -39,9 +40,15 @@ class Game
   def computer_player
     answers_perm = @colors.repeated_permutation(4).to_a
     first_guess = ["Blue","Blue","Green","Green"]
-
+    add_guess_count
+    evaluate_guess?(first_guess)
+    p 
   end
 
+
+  def set_answer
+    @answer = human_choice
+  end
 
   def human_guesser
     loop do
@@ -132,9 +139,10 @@ class Game
       end
       choice_array.push(@colors[input])
       print "i chose "
-      print choice_array
+      
 
       if choice_array.length == 4
+        print choice_array
         return choice_array
       end
     end
