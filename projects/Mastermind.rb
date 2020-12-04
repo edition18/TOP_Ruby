@@ -11,7 +11,7 @@ end
 class Game
   attr_accessor :guess_count, :board
   def initialize  
-    @colors = ["Blue","Green","Red","Orange","Teal","Purple"]
+    @codes = [1,2,3,4,5,6]
     @answer = generate_answer
     @guess_count = 0
     @board = Array.new()
@@ -38,23 +38,24 @@ class Game
   end
 
   def computer_player
-    answers_perm = @colors.repeated_permutation(4).to_a
-    first_guess = ["Blue","Blue","Green","Green"]
-    add_guess_count
+    answers_perm = @codes.repeated_permutation(4).to_a
+    first_guess = [1,1,2,2]
     evaluate_guess?(first_guess)
-    p 
+    print @board[@guess_count].feedback
   end
 
 
   def set_answer
     @answer = human_choice
+    print @answer
   end
 
   def human_guesser
     loop do
+      print "answer is #{@answer}"
       print "\n" + "take your turn"
       # choice = make_turn
-      add_guess_count
+      
       if evaluate_guess?(human_choice) == false
         print "you guessed wrong, try again"
         print "\n" + "Feedback = #{@board[@guess_count].feedback}"
@@ -74,17 +75,16 @@ class Game
     
     loop do
 
-      answer.push(@colors.sample)
+      answer.push(@codes.sample)
       if answer.length == 4
         break
       end
     end
-    print "answer is #{answer}"
     return answer
   end
 
   def evaluate_guess?(guess)
-    
+    add_guess_count
     
     newGuess = GuessFeedback.new(guess,@guess_count)
     
@@ -126,18 +126,18 @@ class Game
   def human_choice
     choice_array = []
     loop do
-      print "\n" + "choose a color"
+      print "\n" + "choose a code"
 
-      @colors.each_with_index do |color, key|
-        print "\n" + "#{key} #{color}"
+      @codes.each_with_index do |int, key|
+        print "\n" + "#{key} #{int}"
       end
       input = gets.chomp.to_i
       
-      while !@colors[input] do
+      while !@codes[input] do
           print "reenter valid values"
           input = gets.chomp.to_i
       end
-      choice_array.push(@colors[input])
+      choice_array.push(@codes[input])
       print "i chose "
       
 
@@ -153,3 +153,22 @@ end
 
 #Game.new.generate_answer
 Game.new.play
+
+
+
+
+# A simple strategy which is good and computationally much faster than Knuth's is the following (I have programmed both)
+
+# Create the list 1111,...,6666 of all candidate secret codes
+
+# Start with 1122.
+
+# Repeat the following 2 steps:
+
+# 1) After you got the answer (number of red and number of white pegs) eliminate from the list of candidates all codes that would not have produced the same answer if they were the secret code.
+
+# 2) Pick the first element in the list and use it as new guess.
+
+# This averages no more than 5 guesses.
+
+# This is the Swaszek (1999-2000) strategy that was mentioned in another answer.
