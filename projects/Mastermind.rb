@@ -9,25 +9,25 @@ end
 
 
 class Game
-  attr_accessor :guess_count, :board
+  attr_accessor :guess_count, :board, :answers_perm
   def initialize  
     @codes = [1,2,3,4,5,6]
     @answer = generate_answer
     @guess_count = 0
     @board = Array.new()
-
+    @answers_perm = nil
   end
 
   def play
-    print "Human Guess Pick 1 , else 2 for creator"
+    print "Human Guess Pick 2 , else 1 for creator"
     
     loop do
       input = gets.chomp.to_i
 
-      if input == 1 
+      if input == 2 
         human_guesser
         return
-      elsif input == 2
+      elsif input == 1
         set_answer
         computer_player
         return
@@ -38,10 +38,17 @@ class Game
   end
 
   def computer_player
-    answers_perm = @codes.repeated_permutation(4).to_a
+    @answers_perm = @codes.repeated_permutation(4).to_a
     first_guess = [1,1,2,2]
     evaluate_guess?(first_guess)
-    print @board[@guess_count].feedback
+    
+
+    # case feedback
+    #   when /\AX/
+    #     "High risk"
+    #   else
+    #     "Unknown risk"
+    # end
   end
 
 
@@ -52,7 +59,7 @@ class Game
 
   def human_guesser
     loop do
-      print "answer is #{@answer}"
+      # print "answer is #{@answer}"
       print "\n" + "take your turn"
       # choice = make_turn
       
@@ -138,11 +145,10 @@ class Game
           input = gets.chomp.to_i
       end
       choice_array.push(@codes[input])
-      print "i chose "
+      
       
 
       if choice_array.length == 4
-        print choice_array
         return choice_array
       end
     end
