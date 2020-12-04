@@ -1,7 +1,8 @@
 class GuessOutcome
-  attr_reader :guess,:black,:white,:incorrect
-  def initialize(guess)
+  attr_accessor :guess, :guess_num,:outcome
+  def initialize(guess,guess_num)
     @guess = guess
+    @guess_num = guess_num
     @outcome = Array.new(4)
   end
 end
@@ -21,7 +22,7 @@ class Game
       print "\n" + "take your turn"
       # choice = make_turn
       @guess_count == 12 ? (print "You Lost"; return) : ""
-      evaluate_guess?(human_choice)
+      evaluate_guess?(human_choice).all? {|i| i == 1}
     #end
   end
 
@@ -51,21 +52,25 @@ class Game
   #     return true 
   # end
 
-  def evaluate_guess?(guess)
+  def evaluate_guess(guess)
     
     add_guess_count
-    newGuess = GuessOutcome.new(guess)
+    newGuess = GuessOutcome.new(guess,@guess_count)
     answer_sorted = @answer.sort
-    # I think its easier to find the number of white balls first
-    guess.sort.each_with_index do |guess, i|
-      newGuess.@outcome[i] = 1
-      # guess[i] == answer_sorted[i] ? (newGuess.outcome[i] = 0; p "true") : ("")
+    guess_sorted = guess.sort
+    p guess_sorted
+
+    #find white balls first by sorting
+    guess_sorted.each_with_index do |g, i|
+      guess_sorted[i] == answer_sorted[i] ? (newGuess.outcome[i] = 0) : ("")
     end
 
-    print newGuess
+    #update white balls to black, if applicable
+    guess.each_with_index do |g, i|
+      guess[i] == @answer[i] ? (newGuess.outcome[i] = 1) : ("")
+    end
     
-
-    return true 
+    return newGuess.outcome 
   end
 
   def add_guess_count
