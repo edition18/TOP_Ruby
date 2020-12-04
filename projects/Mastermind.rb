@@ -1,9 +1,9 @@
-class GuessOutcome
-  attr_accessor :guess, :guess_num,:outcome
+class GuessFeedback
+  attr_accessor :guess, :guess_num,:feedback
   def initialize(guess,guess_num)
     @guess = guess
     @guess_num = guess_num
-    @outcome = Array.new(4)
+    @feedback = Array.new(4)
   end
 end
 
@@ -14,7 +14,7 @@ class Game
     @colors = ["Blue","Green","Red","Orange"]
     @answer = generate_answer
     @guess_count = 0
-    @board = Array.new(12)
+    @board = Array.new()
 
   end
 
@@ -22,15 +22,17 @@ class Game
     loop do
       print "\n" + "take your turn"
       # choice = make_turn
-      @guess_count == 12 ? (print "You Lost"; return) : ""
+
       if evaluate_guess?(human_choice) == false
         print "you guessed wrong, try again"
-        # how do i access the GuessOutcome Object?
-        print "\n" + "#{12 - @guess_count} tries left"
+        print "\n" + "Feedback = #{@board[@guess_count].feedback}"
       else
         print "You've WON!"
         return
       end
+      add_guess_count
+      @guess_count == 12 ? (print "You Lost"; return) : ""
+      print "\n" + "#{12 - @guess_count} tries left"
     end
   end
 
@@ -52,28 +54,27 @@ class Game
 
   def evaluate_guess?(guess)
     
-    add_guess_count
-    newGuess = GuessOutcome.new(guess,@guess_count)
-    @board.push(newGuess)
+    
+    newGuess = GuessFeedback.new(guess,@guess_count)
     
     answer_sorted = @answer.sort
     guess_sorted = guess.sort
 
-    (guess <=> @answer) == 0 ? (return true) : "" 
+    # if guess same as answer, just push the answer
+    (guess <=> @answer) == 0 ? (@board.push(newGuess); return true) : "" 
     
 
     #find white balls first by sorting
     guess_sorted.each_with_index do |g, i|
-      guess_sorted[i] == answer_sorted[i] ? (newGuess.outcome[i] = 0) : ("")
+      guess_sorted[i] == answer_sorted[i] ? (newGuess.feedback[i] = "W") : ("")
     end
 
     #update white balls to black, if applicable
     guess.each_with_index do |g, i|
-      guess[i] == @answer[i] ? (newGuess.outcome[i] = 1) : ("")
+      guess[i] == @answer[i] ? (newGuess.feedback[i] = "B") : ("")
     end
-    
 
-    p @board
+    @board.push(newGuess)
 
     return false 
   end
