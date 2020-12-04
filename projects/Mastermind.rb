@@ -9,21 +9,29 @@ end
 
 
 class Game
-  attr_accessor :guess_count
+  attr_accessor :guess_count, :board
   def initialize  
     @colors = ["Blue","Green","Red","Orange"]
     @answer = generate_answer
     @guess_count = 0
-    @board = Array.new(12) {Array.new()}
+    @board = Array.new(12)
+
   end
 
   def play
-    #loop do
+    loop do
       print "\n" + "take your turn"
       # choice = make_turn
       @guess_count == 12 ? (print "You Lost"; return) : ""
-      evaluate_guess?(human_choice).all? {|i| i == 1}
-    #end
+      if evaluate_guess?(human_choice) == false
+        print "you guessed wrong, try again"
+        # how do i access the GuessOutcome Object?
+        print "\n" + "#{12 - @guess_count} tries left"
+      else
+        print "You've WON!"
+        return
+      end
+    end
   end
 
 
@@ -42,23 +50,17 @@ class Game
     return answer
   end
 
-  # def evaluate_guess?(guess)
-  #     i = 0
-  #     while i < guess.length do
-  #       guess[i] == @answer[i] ? "" : (add_guess_count; return false) 
-  #     i = i + 1
-  #     end
-  #     add_guess_count
-  #     return true 
-  # end
-
-  def evaluate_guess(guess)
+  def evaluate_guess?(guess)
     
     add_guess_count
     newGuess = GuessOutcome.new(guess,@guess_count)
+    @board.push(newGuess)
+    
     answer_sorted = @answer.sort
     guess_sorted = guess.sort
-    p guess_sorted
+
+    (guess <=> @answer) == 0 ? (return true) : "" 
+    
 
     #find white balls first by sorting
     guess_sorted.each_with_index do |g, i|
@@ -70,7 +72,10 @@ class Game
       guess[i] == @answer[i] ? (newGuess.outcome[i] = 1) : ("")
     end
     
-    return newGuess.outcome 
+
+    p @board
+
+    return false 
   end
 
   def add_guess_count
