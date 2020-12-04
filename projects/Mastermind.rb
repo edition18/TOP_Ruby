@@ -19,10 +19,15 @@ class Game
   end
 
   def play
+    
+  end
+
+
+  def human_guesser
     loop do
       print "\n" + "take your turn"
       # choice = make_turn
-
+      add_guess_count
       if evaluate_guess?(human_choice) == false
         print "you guessed wrong, try again"
         print "\n" + "Feedback = #{@board[@guess_count].feedback}"
@@ -30,12 +35,11 @@ class Game
         print "You've WON!"
         return
       end
-      add_guess_count
+      
       @guess_count == 12 ? (print "You Lost"; return) : ""
       print "\n" + "#{12 - @guess_count} tries left"
     end
   end
-
 
   def generate_answer
 
@@ -81,7 +85,7 @@ class Game
       end
     end
 
-    @board.push(newGuess)
+    @board[@guess_count] = newGuess
 
     return false 
   end
