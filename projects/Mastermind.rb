@@ -3,7 +3,7 @@ class GuessFeedback
   def initialize(guess,guess_num)
     @guess = guess
     @guess_num = guess_num
-    @feedback = Array.new(4)
+    @feedback = Array.new()
   end
 end
 
@@ -57,21 +57,28 @@ class Game
     
     newGuess = GuessFeedback.new(guess,@guess_count)
     
-    answer_sorted = @answer.sort
-    guess_sorted = guess.sort
+    temp_array = []
+    guess_temp_array = guess.sort.clone
+    answer_temp_array = @answer.sort.clone
 
     # if guess same as answer, just push the answer
     (guess <=> @answer) == 0 ? (@board.push(newGuess); return true) : "" 
-    
 
-    #find white balls first by sorting
-    guess_sorted.each_with_index do |g, i|
-      guess_sorted[i] == answer_sorted[i] ? (newGuess.feedback[i] = "W") : ("")
+    #add black values, if applicable
+    guess.each_with_index do |g, i|
+      guess[i] == @answer[i] ? (newGuess.feedback.push("B"); temp_array.push(guess[i])) : ("")
     end
 
-    #update white balls to black, if applicable
-    guess.each_with_index do |g, i|
-      guess[i] == @answer[i] ? (newGuess.feedback[i] = "B") : ("")
+    #push to temp array any answer that is correct
+    #to be deleted from the temp answer array and guess
+    temp_array.each do |ball|
+      guess_temp_array.delete_at(guess_temp_array.index(ball))
+      answer_temp_array.delete_at(answer_temp_array.index(ball))
+    end
+    guess_temp_array.each_with_index do |ball, k|
+      if guess_temp_array[k] == answer_temp_array[k]
+        newGuess.feedback.push("W")
+      end
     end
 
     @board.push(newGuess)
