@@ -1,3 +1,5 @@
+require 'set'
+
 class GuessFeedback
   attr_accessor :guess, :guess_num,:feedback
   def initialize(guess,guess_num)
@@ -9,13 +11,14 @@ end
 
 
 class Game
-  attr_accessor :guess_count, :board, :answers_perm
+  attr_accessor :guess_count, :board, :answers_perm, @current_key_pegs
   def initialize  
     @codes = [1,2,3,4,5,6]
     @answer = generate_answer
     @guess_count = 0
     @board = Array.new()
     @answers_perm = nil
+    @current_key_pegs = nil
   end
 
   def play
@@ -40,15 +43,34 @@ class Game
   def computer_player
     @answers_perm = @codes.repeated_permutation(4).to_a
     first_guess = [1,1,2,2]
-    evaluate_guess?(first_guess)
+    if evaluate_guess?(first_guess) == true 
+      print "computer win"
+      return
+    else
+      print @board[@guess_count].feedback.length
+      case @board[@guess_count].feedback.length
+        when 1
+          #if 1 , you know that you at least narrow it down to all permutations that at least includes 1 copy of each of the values
+        when 2
+          # if 2, you need to narrow down to anything that at least contains 2 of those digits
+        when 3
+          unique_values = first_guess.uniq
+          @answer_perm.select! do |perm|
+            perm.include?()
+          end
+        when 4
+          # if 4 you just want any permutations of those digits
+          first_guess.repeated_permutation(4).to_a.each do |perm|
+            @answers_perm.delete!(perm)
+          end
+          @answers_perm.delete!(first_guess)
+
+      end
+
+    end
     
 
-    # case feedback
-    #   when /\AX/
-    #     "High risk"
-    #   else
-    #     "Unknown risk"
-    # end
+
   end
 
 
@@ -154,12 +176,20 @@ class Game
     end
   end
 
+  def find_key_peg(array, array_to_compare_against)
+
+
+  end
+
 
 end
 
 #Game.new.generate_answer
 Game.new.play
 
+
+
+#by nature of symmetry, the feedback you have on your guess would also apply to the possible_answers
 
 
 
