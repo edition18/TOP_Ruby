@@ -1,7 +1,7 @@
 require 'set'
 
 class GuessFeedback
-  attr_accessor :guess, :guess_num,:feedback
+  attr_accessor :feedback
   def initialize(guess,guess_num)
     @guess = guess
     @guess_num = guess_num
@@ -11,7 +11,7 @@ end
 
 
 class Game
-  attr_accessor :guess_count, :board, :answers_perm, @current_key_pegs
+  attr_accessor :guess_count, :board, :answers_perm, :current_key_pegs, :current_guess
   def initialize  
     @codes = [1,2,3,4,5,6]
     @answer = generate_answer
@@ -19,6 +19,7 @@ class Game
     @board = Array.new()
     @answers_perm = nil
     @current_key_pegs = nil
+    @current_guess = nil
   end
 
   def play
@@ -43,36 +44,32 @@ class Game
   def computer_player
     @answers_perm = @codes.repeated_permutation(4).to_a
     first_guess = [1,1,2,2]
-    if evaluate_guess?(first_guess) == true 
-      print "computer win"
-      return
-    else
-      print @board[@guess_count].feedback.length
-      case @board[@guess_count].feedback.length
-        when 1
-          #if 1 , you know that you at least narrow it down to all permutations that at least includes 1 copy of each of the values
-        when 2
-          # if 2, you need to narrow down to anything that at least contains 2 of those digits
-        when 3
-          unique_values = first_guess.uniq
-          @answer_perm.select! do |perm|
-            perm.include?()
-          end
-        when 4
-          # if 4 you just want any permutations of those digits
-          first_guess.repeated_permutation(4).to_a.each do |perm|
-            @answers_perm.delete!(perm)
-          end
-          @answers_perm.delete!(first_guess)
-
+      if evaluate_guess?(first_guess) == true 
+        print "computer win"
+        return
+      else
       end
-
     end
-    
-
-
   end
 
+  def return_key_pegs(your_array, compare_against_array)
+    your_array.sort!
+    compare_against_array.sort!
+    count = 0
+
+    your_array.each_with_index do |ele, key|
+      if your_array[key] == compare_against_array[key]
+        count = count + 1
+      end
+    end
+
+    return count
+  end
+
+  def answers_perm_reducer
+    #this aims to reduce the permutations down
+    #based on looking at the current 
+  end
 
   def set_answer
     @answer = human_choice
@@ -114,8 +111,8 @@ class Game
 
   def evaluate_guess?(guess)
     add_guess_count
-    
-    newGuess = GuessFeedback.new(guess,@guess_count)
+    @current_guess = guess
+    newGuess = GuessFeedback.new()
     
     temp_array = []
     guess_temp_array = guess.sort.clone
@@ -142,6 +139,7 @@ class Game
     end
 
     @board[@guess_count] = newGuess
+    @current_key_pegs = newGuess.feedback.length
 
     return false 
   end
@@ -167,8 +165,6 @@ class Game
           input = gets.chomp.to_i
       end
       choice_array.push(@codes[input])
-      
-      
 
       if choice_array.length == 4
         return choice_array
@@ -176,13 +172,7 @@ class Game
     end
   end
 
-  def find_key_peg(array, array_to_compare_against)
 
-
-  end
-
-
-end
 
 #Game.new.generate_answer
 Game.new.play
