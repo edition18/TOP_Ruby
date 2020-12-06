@@ -1,2 +1,2 @@
 language = "bash"
-run = "ruby ./projects/Mastermind.rb"
+run = "ruby ./projects/event_manager/lib/event_manager.rb"
