@@ -1,5 +1,3 @@
-require 'set'
-
 class GuessFeedback
   attr_accessor :feedback
   def initialize(guess,guess_num)
@@ -11,7 +9,7 @@ end
 
 
 class Game
-  attr_accessor :guess_count, :board, :answers_perm, :current_key_pegs, :current_guess
+  attr_accessor :guess_count, :board, :answers_perm, :current_key_pegs, :current_guess, :current_feedback, :computer_won
   def initialize  
     @codes = [1,2,3,4,5,6]
     @answer = generate_answer
@@ -20,6 +18,8 @@ class Game
     @answers_perm = nil
     @current_key_pegs = nil
     @current_guess = nil
+    @current_feedback = []
+    @computer_won = false
   end
 
   def play
@@ -42,49 +42,64 @@ class Game
   end
 
   def computer_player
-    @answers_perm = @codes.repeated_permutation(4).to_a
+    set_answer
     first_guess = [1,1,2,2]
-      if evaluate_guess?(first_guess) == true 
-        print "computer win"
+    loop do
+      if @guess_count == 0 
+        computer_attempt(first_guess)
+      elsif guess_count == 12
+        print "computer lost"
         return
       else
+        computer_attempt(next_guess)
+      end
+
+      if @computer_won == true
+        print "computer won"
+        return
       end
     end
   end
 
-  def return_key_pegs(your_array, compare_against_array)
-    your_array.sort!
-    compare_against_array.sort!
-    count = 0
+  def computer_attempt(guess)
+    add_guess_count
+    clear_current_feedback
+    @current_guess = guess
+    print "computer guesses #{guess} on guess number #{@guess_count}"
 
-    your_array.each_with_index do |ele, key|
-      if your_array[key] == compare_against_array[key]
-        count = count + 1
-      end
-    end
+    (guess <=> @answer) == 0 ? (@computer_won = true; return) : "" 
 
-    return count
+
+
+
+
+
   end
 
-  def answers_perm_reducer
+  def next_guess
+    return @answers_perm[0]
+  end
+
+  def answers_perm_reducer(current_guess, key_pegs)
     #this aims to reduce the permutations down
     #based on looking at the current 
   end
 
   def set_answer
+    print "set your answer"
     @answer = human_choice
     print @answer
   end
 
   def human_guesser
     loop do
-      # print "answer is #{@answer}"
+      print "answer is #{@answer}"
       print "\n" + "take your turn"
       # choice = make_turn
       
       if evaluate_guess?(human_choice) == false
         print "you guessed wrong, try again"
-        print "\n" + "Feedback = #{@board[@guess_count].feedback}"
+        print "\n" + "Feedback = #{@current_feedback}"
       else
         print "You've WON!"
         return
@@ -109,21 +124,53 @@ class Game
     return answer
   end
 
+  def clear_current_feedback
+    @current_feedback = []
+  end
+
+  def return_key_pegs(guess)
+    count = 0
+    temp_array = []
+    #if we have direct match at index, we have black pegs
+    #we need store these somewhere (A)
+    guess.each_with_index do |ele, i|
+      guess[i] == @answer[i] ? (count = count + 1; temp_array.push(guess[i])) : ("")
+    end
+
+    #following which we remove each element in A from a duplicate of the guess array and answer array
+
+    temp_guess = guess.clone
+    temp_answer = @answer.clone
+    temp_array.each do |item|
+        temp_guess.delete_at(temp_guess.index(item))
+        temp_answer.delete_at(temp_answer.index(item))
+    end
+    #then we run every element of that reduced duplicate array against the answer array, if it is included then we add to white peg and then delete that item (prevent double count)
+    temp_guess.each do |item|
+        if temp_answer.include?(item)
+          count = count + 1
+        temp_answer.delete_at(temp_answer.index(item))
+      end
+    end
+    print "the key pegs are #{count}"
+    return count
+  end
+
   def evaluate_guess?(guess)
     add_guess_count
+    clear_current_feedback
     @current_guess = guess
-    newGuess = GuessFeedback.new()
     
     temp_array = []
     guess_temp_array = guess.sort.clone
     answer_temp_array = @answer.sort.clone
 
     # if guess same as answer, just push the answer
-    (guess <=> @answer) == 0 ? (@board.push(newGuess); return true) : "" 
+    (guess <=> @answer) == 0 ? (return true) : "" 
 
     #add black values, if applicable
     guess.each_with_index do |g, i|
-      guess[i] == @answer[i] ? (newGuess.feedback.push("B"); temp_array.push(guess[i])) : ("")
+      guess[i] == @answer[i] ? (@current_feedback.push("B"); temp_array.push(guess[i])) : ("")
     end
 
     #push to temp array any answer that is correct
@@ -134,12 +181,10 @@ class Game
     end
     guess_temp_array.each_with_index do |ball, k|
       if guess_temp_array[k] == answer_temp_array[k]
-        newGuess.feedback.push("W")
+        @current_feedback.push("W")
       end
     end
-
-    @board[@guess_count] = newGuess
-    @current_key_pegs = newGuess.feedback.length
+    return_key_pegs(guess)
 
     return false 
   end
@@ -148,7 +193,6 @@ class Game
     @guess_count = @guess_count + 1
     #print "\n" + "Current Guess Count: #{@guess_count}"
   end
-
 
   def human_choice
     choice_array = []
@@ -171,8 +215,7 @@ class Game
       end
     end
   end
-
-
+end
 
 #Game.new.generate_answer
 Game.new.play
