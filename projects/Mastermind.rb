@@ -20,7 +20,6 @@ class Game
     @current_guess = nil
     @current_feedback = []
     @computer_won = false
-
   end
 
   def play
@@ -43,7 +42,6 @@ class Game
   end
 
   def computer_player
-    
     first_guess = [1,1,2,2]
     loop do
       if @guess_count == 0 
@@ -63,8 +61,10 @@ class Game
   end
 
   def computer_attempt(guess)
+    clear_current_key_pegs
     add_guess_count
     clear_current_feedback
+    
     @current_guess = guess
     print "\n" + "computer guesses #{guess} on guess number #{@guess_count}"
 
@@ -73,17 +73,26 @@ class Game
     #if have not won
 
     #reduce array down
+    @current_key_pegs = return_key_pegs(guess, @answer)
+    
     answers_perm_reducer(guess)
 
   end
 
+  def clear_current_key_pegs
+    @current_key_pegs = 0
+  end
+
   def next_guess
-    return @answers_perm[0]
+
+      return @answers_perm[0]
+
   end
 
   def answers_perm_reducer(current_guess)
     #this aims to reduce the permutations down
     #based on looking at the current 
+    
     temp_array = []
     @answers_perm.each do |p|
       if return_key_pegs(p, current_guess) == @current_key_pegs
@@ -91,7 +100,8 @@ class Game
       end
     end
 
-    @answers_perm = temp_array
+    @answers_perm = temp_array.clone
+    print "\n" + "permutations left #{@answers_perm.count}"
   end
 
   def set_answer
@@ -139,12 +149,12 @@ class Game
   end
 
   def return_key_pegs(guess, compare_against)
-    @current_key_pegs = 0
+    count = 0
     temp_array = []
     #if we have direct match at index, we have black pegs
     #we need store these somewhere (A)
     guess.each_with_index do |ele, i|
-      guess[i] == compare_against[i] ? (@current_key_pegs = @current_key_pegs + 1; temp_array.push(guess[i])) : ("")
+      guess[i] == compare_against[i] ? (count = count + 1; temp_array.push(guess[i])) : ("")
     end
 
     #following which we remove each element in A from a duplicate of the guess array and answer array
@@ -155,14 +165,14 @@ class Game
         temp_guess.delete_at(temp_guess.index(item))
         temp_compare_against.delete_at(temp_compare_against.index(item))
     end
-    #then we run every element of that reduced duplicate array against the answer array, if it is included then we add to white peg and then delete that item (prevent double @current_key_pegs)
+    #then we run every element of that reduced duplicate array against the answer array, if it is included then we add to white peg and then delete that item (prevent double count)
     temp_guess.each do |item|
         if temp_compare_against.include?(item)
-          @current_key_pegs = @current_key_pegs + 1
+          count = count + 1
         temp_compare_against.delete_at(temp_compare_against.index(item))
       end
     end
-    return @current_key_pegs
+    return count
   end
 
   def evaluate_guess?(guess, compare_against)
