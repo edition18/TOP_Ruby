@@ -8,4 +8,5 @@
   4. stock_picker => attempt to find best day combination to maximize profits
   5. substrings => identify how many times a word in a given dictionary has appeared in a string
   6. TicTacToe (Game)
+  7. event_manager => manipulating CSV files, utilizing ERB templates
 2. ruby-exercises => couple of simple exercises on ruby
