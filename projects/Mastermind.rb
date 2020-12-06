@@ -15,15 +15,16 @@ class Game
     @answer = generate_answer
     @guess_count = 0
     @board = Array.new()
-    @answers_perm = nil
-    @current_key_pegs = nil
+    @answers_perm = @codes.repeated_permutation(4).to_a
+    @current_key_pegs = 0
     @current_guess = nil
     @current_feedback = []
     @computer_won = false
+
   end
 
   def play
-    print "Human Guess Pick 2 , else 1 for creator"
+    print "1 for Human Code Creator,Human Guess Pick 2"
     
     loop do
       input = gets.chomp.to_i
@@ -42,7 +43,7 @@ class Game
   end
 
   def computer_player
-    set_answer
+    
     first_guess = [1,1,2,2]
     loop do
       if @guess_count == 0 
@@ -65,14 +66,14 @@ class Game
     add_guess_count
     clear_current_feedback
     @current_guess = guess
-    print "computer guesses #{guess} on guess number #{@guess_count}"
+    print "\n" + "computer guesses #{guess} on guess number #{@guess_count}"
 
     (guess <=> @answer) == 0 ? (@computer_won = true; return) : "" 
 
+    #if have not won
 
-
-
-
+    #reduce array down
+    answers_perm_reducer(guess)
 
   end
 
@@ -80,9 +81,17 @@ class Game
     return @answers_perm[0]
   end
 
-  def answers_perm_reducer(current_guess, key_pegs)
+  def answers_perm_reducer(current_guess)
     #this aims to reduce the permutations down
     #based on looking at the current 
+    temp_array = []
+    @answers_perm.each do |p|
+      if return_key_pegs(p, current_guess) == @current_key_pegs
+        temp_array.push(p)
+      end
+    end
+
+    @answers_perm = temp_array
   end
 
   def set_answer
@@ -92,12 +101,13 @@ class Game
   end
 
   def human_guesser
-    loop do
-      print "answer is #{@answer}"
+    print "answer is #{@answer}"
+    
+    loop do  
       print "\n" + "take your turn"
       # choice = make_turn
       
-      if evaluate_guess?(human_choice) == false
+      if evaluate_guess?(human_choice, @answer) == false
         print "you guessed wrong, try again"
         print "\n" + "Feedback = #{@current_feedback}"
       else
@@ -128,42 +138,41 @@ class Game
     @current_feedback = []
   end
 
-  def return_key_pegs(guess)
-    count = 0
+  def return_key_pegs(guess, compare_against)
+    @current_key_pegs = 0
     temp_array = []
     #if we have direct match at index, we have black pegs
     #we need store these somewhere (A)
     guess.each_with_index do |ele, i|
-      guess[i] == @answer[i] ? (count = count + 1; temp_array.push(guess[i])) : ("")
+      guess[i] == compare_against[i] ? (@current_key_pegs = @current_key_pegs + 1; temp_array.push(guess[i])) : ("")
     end
 
     #following which we remove each element in A from a duplicate of the guess array and answer array
 
     temp_guess = guess.clone
-    temp_answer = @answer.clone
+    temp_compare_against = compare_against.clone
     temp_array.each do |item|
         temp_guess.delete_at(temp_guess.index(item))
-        temp_answer.delete_at(temp_answer.index(item))
+        temp_compare_against.delete_at(temp_compare_against.index(item))
     end
-    #then we run every element of that reduced duplicate array against the answer array, if it is included then we add to white peg and then delete that item (prevent double count)
+    #then we run every element of that reduced duplicate array against the answer array, if it is included then we add to white peg and then delete that item (prevent double @current_key_pegs)
     temp_guess.each do |item|
-        if temp_answer.include?(item)
-          count = count + 1
-        temp_answer.delete_at(temp_answer.index(item))
+        if temp_compare_against.include?(item)
+          @current_key_pegs = @current_key_pegs + 1
+        temp_compare_against.delete_at(temp_compare_against.index(item))
       end
     end
-    print "the key pegs are #{count}"
-    return count
+    return @current_key_pegs
   end
 
-  def evaluate_guess?(guess)
+  def evaluate_guess?(guess, compare_against)
     add_guess_count
     clear_current_feedback
     @current_guess = guess
     
     temp_array = []
     guess_temp_array = guess.sort.clone
-    answer_temp_array = @answer.sort.clone
+    compare_against_temp = compare_against.sort.clone
 
     # if guess same as answer, just push the answer
     (guess <=> @answer) == 0 ? (return true) : "" 
@@ -177,15 +186,15 @@ class Game
     #to be deleted from the temp answer array and guess
     temp_array.each do |ball|
       guess_temp_array.delete_at(guess_temp_array.index(ball))
-      answer_temp_array.delete_at(answer_temp_array.index(ball))
+      compare_against_temp.delete_at(compare_against_temp.index(ball))
     end
     guess_temp_array.each_with_index do |ball, k|
-      if guess_temp_array[k] == answer_temp_array[k]
+      if guess_temp_array[k] == compare_against_temp[k]
         @current_feedback.push("W")
       end
     end
-    return_key_pegs(guess)
-
+    return_key_pegs(guess,compare_against)
+    print "\n" +"Your guess was #{@current_guess}"
     return false 
   end
 
