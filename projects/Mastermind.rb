@@ -49,14 +49,14 @@ class Game
       if @guess_count == 0 
         computer_attempt(first_guess)
       elsif guess_count == 12
-        print "computer lost"
+        print "\n" + "computer lost"
         return
       else
         computer_attempt(next_guess)
       end
 
       if @computer_won == true
-        print "computer won"
+        print "\n" + "computer won"
         return
       end
     end
