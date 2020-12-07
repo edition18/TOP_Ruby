@@ -1,6 +1,7 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
+require "date"
 
 puts "EventManager initialized."
 
@@ -51,9 +52,42 @@ template_letter = File.read "form_letter.erb"
 erb_template = ERB.new template_letter
 #convert the file into a ERB object
 
+hour_collection = Hash.new
+wday_collection = Hash.new
+hour_array = []
+wday_array = []
+
 contents.each do |row|
+
     id = row[0] #see that the first item in the row is a ID number, it has a "" header
     name = row[:first_name] #we find the row corresponding symbol
+    clean_phone = row[:homephone].delete(' ').delete("(").delete(")").delete("-").delete(".")
+    # if clean_phone.length > 11 || (clean_phone.length == 11 && clean_phone[0] != 1) || clean_phone.length < 10
+    #   print "bad number"
+    # else
+    #   print "good number"
+    # end
+    converted_to_datetime = DateTime.strptime(row[:regdate].gsub('/08', '/2008').gsub('/09', '/2009'),"%m/%d/%Y %H:%M")
+
+    hour_array.push(converted_to_datetime.hour)
+    
+    if hour_collection[converted_to_datetime.hour] # exists
+      hour_collection[converted_to_datetime.hour] =  hour_collection[converted_to_datetime.hour] + 1
+    else
+      hour_collection[converted_to_datetime.hour] = 1
+    end
+    #11/16/08 11:44
+
+    wday_array.push(converted_to_datetime.wday)
+    
+    if wday_collection[converted_to_datetime.wday] # exists
+      wday_collection[converted_to_datetime.wday] =  wday_collection[converted_to_datetime.wday] + 1
+    else
+      wday_collection[converted_to_datetime.wday] = 1
+    end
+    
+
+
     zipcode = clean_zipcode(row[:zipcode]) 
     legislators = legislators_by_zipcode(zipcode)
 
@@ -62,3 +96,6 @@ contents.each do |row|
     
     save_thank_you_letter(id,form_letter)
 end
+
+print hour_collection
+print wday_collection # 0 being sunday 6 being saturday
