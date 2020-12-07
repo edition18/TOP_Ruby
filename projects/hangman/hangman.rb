@@ -7,18 +7,26 @@ class Game
   def initialize
     
     @answer = get_answer_code
-    @display_answer = censor_answer(@answer)
+    @player_answer = censor_answer(@answer)
     @wrong_count = 0
     @tries_left = 8
     @correct_choices = []
     @won = false
-
-    print @answer
   end
+
+  def display_player_answer
+    #print display = "\n" + @player_answer.split("").join(" ")
+    print @answer
+    print @player_answer
+    print @player_answer.split("")
+    print "\n" + @player_answer.split("").join("|")
+  end
+
 
 
   def play
     loop do
+      display_player_answer
       print "Make your guess"
       make_guess(gets.chomp)
 
@@ -26,7 +34,7 @@ class Game
   end
 
   def censor_answer(string)
-    replaced = string.gsub(/\w/,"_")
+    return replaced = string.gsub(/\w/,"_")
   end
 
   def get_answer_code
@@ -58,7 +66,7 @@ class Game
         user_input = gets.chomp
         next
       # correct input, but already guessed
-      elsif @display_answer.include?(user_input)
+      elsif @player_answer.include?(user_input)
         print "You've already guessed that correctly"
         user_input = gets.chomp
         next
@@ -68,14 +76,27 @@ class Game
         return
       else
         @correct_choices.push(user_input)
+        merge_guess_with_answer
+        display_player_answer
       end
     end
   end
 
-  def render_display_answer
-    #for every alphabet in @correct_choices
-    #
+  def merge_guess_with_answer
+    array = @answer.split("")
+    display_array = @player_answer.split("")
+
+    array.each_with_index do |alphabet, index|
+      @correct_choices.each do |choice|
+        if array[index] == choice
+          display_array[index] = array[index]
+        end
+      end
+    end
+
+    @player_answer = display_array.clone
   end
+
 
   def wrong_guess
     print "\n" + "you've guesed wrong"
@@ -90,4 +111,46 @@ class Game
   end
 end
 
-# Game.new.play
+Game.new.play
+
+
+# answer = "timetogetspicy"
+# display = "______________"
+
+# guessed = ["t","e"]
+
+# array = answer.split("")
+# display_array = display.split("")
+
+# p array
+
+# array.each_with_index do |alphabet, index|
+  
+#   guessed.each do |guess|
+#     if array[index] == guess
+#       display_array[index] = array[index]
+#     end
+#   end
+# end
+
+# p display_array
+
+
+# def censor_answer(string)
+#     return replaced = string.gsub(/\w/,"x")
+# end
+
+# censored = censor_answer("test")
+
+# print censored
+
+# print "\n" + censored.split("").join(" ")
+
+  # def censor_answer
+  #   print @answer
+  #   string ="test"
+  #   print replaced = string.gsub(/\w/,"_").split("").join("|")
+  #   return replaced = string.gsub(/\w/,"_")
+  # end
+
+  # censor_answer
