@@ -1,2 +1,2 @@
 language = "bash"
-run = "ruby ./projects/Mastermind.rb"
+run = "ruby ./projects/hangman/hangman.rb"
