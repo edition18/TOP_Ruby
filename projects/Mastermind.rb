@@ -1,13 +1,3 @@
-class GuessFeedback
-  attr_accessor :feedback
-  def initialize(guess,guess_num)
-    @guess = guess
-    @guess_num = guess_num
-    @feedback = Array.new()
-  end
-end
-
-
 class Game
   attr_accessor :guess_count, :board, :answers_perm, :current_key_pegs, :current_guess, :current_feedback, :computer_won
   def initialize  
