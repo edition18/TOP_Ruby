@@ -70,6 +70,7 @@ class Game
     input = gets.chomp
     if input.length == 1 && input.downcase == "y"
       #load
+      # the @ is needed because without it it was save as a local variable without state!
       @loaded = Marshal.load(File.open('./projects/hangman/hangman_save.txt'))
 
       @answer = @loaded.answer
