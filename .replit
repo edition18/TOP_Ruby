@@ -1,2 +1,2 @@
 language = "bash"
-run = "ruby ./projects/fibonacci/fibonacci.rb"
+run = "ruby ./projects/algorithms/mergesort.rb"
