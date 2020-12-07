@@ -9,4 +9,5 @@
   5. substrings => identify how many times a word in a given dictionary has appeared in a string
   6. TicTacToe (Game)
   7. event_manager => manipulating CSV files, utilizing ERB templates
+  8. Hangman => classic game, also added save/load of game states 
 2. ruby-exercises => couple of simple exercises on ruby
