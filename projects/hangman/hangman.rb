@@ -16,8 +16,6 @@ class Game
 
   def display_player_answer
     #print display = "\n" + @player_answer.split("").join(" ")
-    print @answer
-    print @player_answer.split("")
     
     print "\n" + @player_answer.split("").join(" ")
   end
@@ -25,10 +23,24 @@ class Game
 
 
   def play
+    print @answer
+    display_player_answer
     loop do
-      display_player_answer
-      print "n" + "Make your guess"
-      make_guess(gets.chomp)
+      
+      print "\n" + "Make your guess"
+      if @tries_left != 0
+        make_guess(gets.chomp)
+      end
+
+      if @won == true
+        print "\n" + "you've WON!"
+        return
+      end
+
+      if @tries_left == 0
+        print "\n" + "you've LOST!"
+        return
+      end
 
     end
   end
@@ -47,7 +59,7 @@ class Game
     # Strip. This method is sometimes called trim(): it removes all leading and trailing whitespace. Spaces, newlines, and other whitespace like tab characters are eliminated
     dictionary_file.each do |row|
       if row.strip.length >= 5 && row.strip.length <= 12
-        word_array.push(row.strip)
+        word_array.push(row.strip.downcase)
       end
     end
 
@@ -56,31 +68,33 @@ class Game
     return word_array.sample
   end
 
-  #by default ruby is case insensitive
+
   def make_guess(user_input)
     #make sure the answer is only 1 character
-    loop do
-      print "\n" + "you guessed #{user_input}"
+
+      print "\n" + "you guessed #{user_input.downcase}"
       #wrong input
       if user_input.length > 1 || (user_input.to_i.to_s.is_a? Integer)
         print "please enter only 1 letter"
-        user_input = gets.chomp
-        next
+
       # correct input, but already guessed
-      elsif @player_answer.include?(user_input)
+      elsif @player_answer.include?(user_input.downcase)
         print "You've already guessed that correctly"
-        user_input = gets.chomp
-        next
       # correct input, and not yet guessed
-      elsif !@answer.include?(user_input)
+      elsif !@answer.include?(user_input.downcase)
         wrong_guess
         return
       else
-        @correct_choices.push(user_input)
+        @correct_choices.push(user_input.downcase)
         merge_guess_with_answer
+        player_win_check
         display_player_answer
       end
-    end
+
+  end
+
+  def player_win_check
+    (@player_answer <=> @answer) == 0 ? (@won = true; return) : "" 
   end
 
   def merge_guess_with_answer
@@ -95,7 +109,7 @@ class Game
       end
     end
 
-    @player_answer = display_array.clone
+    @player_answer = display_array.join("").clone
   end
 
 
