@@ -3,7 +3,7 @@
 
 
 class Game
-  attr_reader :answer
+  attr_reader :answer, :player_answer, :wrong_count, :tries_left, :correct_choices, :won
   def initialize
     
     @answer = get_answer_code
@@ -25,24 +25,67 @@ class Game
   def play
     print @answer
     display_player_answer
+    option_load
     loop do
       
-      print "\n" + "Make your guess"
+
       if @tries_left != 0
+        option_save
+        display_player_answer
         make_guess(gets.chomp)
       end
 
       if @won == true
         print "\n" + "you've WON!"
-        return
+        exit
       end
 
       if @tries_left == 0
         print "\n" + "you've LOST!"
-        return
+        print "\n" + "answer was #{@answer}"
+        exit
       end
 
     end
+  end
+
+  def option_save
+    # ask if player wants to save?
+    print "\n" + "Y to save, else hit anything else to resume"
+    input = gets.chomp
+    if input.length == 1 && input.downcase == "y"
+      #save
+      #use self to save itself
+      Marshal.dump(self, File.open('./projects/hangman/hangman_save.txt', 'w+')) 
+      print "\n" + "save done, exiting game"
+      exit
+    else
+      print "\n" + "Make your guess"
+      return
+    end
+  end
+
+  def option_load
+    print "\n" + "Y to load from file, else hit anything else to resume"
+    input = gets.chomp
+    if input.length == 1 && input.downcase == "y"
+      #load
+      @loaded = Marshal.load(File.open('./projects/hangman/hangman_save.txt'))
+
+      @answer = @loaded.answer
+      @player_answer = @loaded.player_answer
+      @wrong_count = @loaded.wrong_count
+      @tries_left = @loaded.tries_left
+      @correct_choices = @loaded.correct_choices
+      @won = @loaded.won
+      
+      print "\n" + "Loaded, continue your game"
+      display_player_answer
+    else
+      
+      return
+    end
+
   end
 
   def censor_answer(string)
@@ -74,7 +117,7 @@ class Game
 
       print "\n" + "you guessed #{user_input.downcase}"
       #wrong input
-      if user_input.length > 1 || (user_input.to_i.to_s.is_a? Integer)
+      if user_input.length > 1 || (user_input.to_i.to_s.is_a? Integer) || user_input == ""
         print "please enter only 1 letter"
 
       # correct input, but already guessed
@@ -129,43 +172,11 @@ end
 Game.new.play
 
 
-# answer = "timetogetspicy"
-# display = "______________"
+class Dummy
+  attr_reader :spec, :age
+  def initialize(spec,age)
+    @spec = spec
+    @age = age
+  end
+end
 
-# guessed = ["t","e"]
-
-# array = answer.split("")
-# display_array = display.split("")
-
-# p array
-
-# array.each_with_index do |alphabet, index|
-  
-#   guessed.each do |guess|
-#     if array[index] == guess
-#       display_array[index] = array[index]
-#     end
-#   end
-# end
-
-# p display_array
-
-
-# def censor_answer(string)
-#     return replaced = string.gsub(/\w/,"x")
-# end
-
-# censored = censor_answer("test")
-
-# print censored
-
-# print "\n" + censored.split("").join(" ")
-
-  # def censor_answer
-  #   print @answer
-  #   string ="test"
-  #   print replaced = string.gsub(/\w/,"_").split("").join("|")
-  #   return replaced = string.gsub(/\w/,"_")
-  # end
-
-  # censor_answer
