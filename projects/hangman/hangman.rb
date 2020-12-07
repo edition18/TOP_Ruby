@@ -17,9 +17,9 @@ class Game
   def display_player_answer
     #print display = "\n" + @player_answer.split("").join(" ")
     print @answer
-    print @player_answer
     print @player_answer.split("")
-    print "\n" + @player_answer.split("").join("|")
+    
+    print "\n" + @player_answer.split("").join(" ")
   end
 
 
@@ -27,7 +27,7 @@ class Game
   def play
     loop do
       display_player_answer
-      print "Make your guess"
+      print "n" + "Make your guess"
       make_guess(gets.chomp)
 
     end
@@ -43,10 +43,11 @@ class Game
     dictionary_file = IO.new(path)
     
     word_array = []
-
+    # use strip to remove linebreaks and white space trailing
+    # Strip. This method is sometimes called trim(): it removes all leading and trailing whitespace. Spaces, newlines, and other whitespace like tab characters are eliminated
     dictionary_file.each do |row|
-      if row.length >= 5 && row.length <= 12
-        word_array.push(row)
+      if row.strip.length >= 5 && row.strip.length <= 12
+        word_array.push(row.strip)
       end
     end
 
