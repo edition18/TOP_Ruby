@@ -10,4 +10,6 @@
   6. TicTacToe (Game)
   7. event_manager => manipulating CSV files, utilizing ERB templates
   8. Hangman => classic game, also added save/load of game states 
+  9. data_structures
+    1. linked_list => linked_list as well as various methods to manipulate them
 2. ruby-exercises => couple of simple exercises on ruby

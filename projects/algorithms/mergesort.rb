@@ -1,5 +1,4 @@
 def merge_sort(array)
-  p array.length
   if array.length < 2
     # no need to mergesort
     # if array only length 1 or 0
@@ -8,16 +7,16 @@ def merge_sort(array)
     # it doesnt matter array.length is actually more than the size of the array, ruby automatically takes it to the maximum length of the array at this current point
     # in my case I just refactored it to the right dimensions
 
-    # array.length / 2 always rounds down
-    # for instance, a length of 7 divides to 3 = array.length / 2
-    # since both left and right uses array.length / 2 , this would have been an issue
-    # since we always going down to the BASE CASE, i.e 1, the rounding error is NOT to be an issue
+    # note the use of ...
+    # https://ruby-doc.org/core-2.7.2/Range.html
+    # Beginless/Endless Ranges
+    # this is why array.length / 2 works
+    # [3..array.length] means it starts collecting from 4 onwards
 
     left = merge_sort(array[0...array.length / 2])
-    p left
     right = merge_sort(array[array.length / 2...array.length])
-    p right
     merge(left, right)
+
   end
 end
 
@@ -64,6 +63,8 @@ rand(10).times do
   arr << rand(50)
 end
 array2 = [6,45,31,32,34,47,10]
-print merge_sort(array2)
+# print merge_sort(array2)
 
-
+half = array2.length / 2
+p array2[0...half]
+p array2[half...array2.length]

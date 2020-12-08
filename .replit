@@ -1,2 +1,2 @@
 language = "bash"
-run = "ruby ./projects/algorithms/mergesort.rb"
+run = "ruby ./projects/data_structures/linked_list.rb"
