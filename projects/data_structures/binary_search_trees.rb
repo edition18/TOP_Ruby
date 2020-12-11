@@ -23,8 +23,8 @@ end
 
 class Tree
   attr_accessor :root, :arr
-  def initialize(array)
-    @root = build_tree(array)
+  def initialize
+    @root = nil
     @arr = []
   end
 
@@ -123,7 +123,7 @@ class Tree
     
     if node != nil
         inorder(current_node.left)
-        print current_node.data
+        print "#{current_node.data}  "
         inorder(current_node.right)
     end
   end
@@ -132,7 +132,7 @@ class Tree
     current_node = node
     
     if node != nil
-        print current_node.data  
+        print "#{current_node.data}  "
         inorder(current_node.left)
         inorder(current_node.right)
         #pre order visits left child node of PARENT first
@@ -146,7 +146,7 @@ class Tree
          
         inorder(current_node.left)
         inorder(current_node.right)
-        print current_node.data #post order visits left lowest child node first
+        print "#{current_node.data}  " #post order visits left lowest child node first
     end
   end
 
@@ -195,8 +195,7 @@ class Tree
     else
       @arr = []
       inorder_array(node)
-
-      build_tree(@arr)
+      @root = build_tree(@arr)
       return 
     end
   
@@ -206,24 +205,36 @@ class Tree
     current_node = node
     
     if node != nil
-        inorder(current_node.left)
+        inorder_array(current_node.left)
         @arr.push(current_node.data)
-        inorder(current_node.right)
+        inorder_array(current_node.right)
     end
-    return @arr
+  end
+
+  def pretty_print(node = @root, prefix = '', is_left = true)
+    pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
+    puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
+    pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
   end
 end
 
 
 
-i = Tree.new([1,2,3,4,5,6,7])
-
-p i
-
-
-
-
-
+i = Tree.new
+i.root = i.build_tree(Array.new(15) { rand(1..100) })
+print i.balanced?
+print i.inorder(i.root)
+print i.preorder(i.root)
+print i.postorder(i.root)
+20.times do
+  i.insert(rand(120..250))
+end
+i.rebalance(i.root)
+i.pretty_print
+print i.balanced?
+print i.inorder(i.root)
+print i.preorder(i.root)
+print i.postorder(i.root)
 
 
 
