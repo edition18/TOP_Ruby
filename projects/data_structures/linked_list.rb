@@ -113,7 +113,6 @@ class LinkedList
   def to_s
     error_check
     current_node = @head
-    p @head
     until current_node == nil
       
       print " #{current_node.value} ==>"
@@ -146,4 +145,4 @@ linked_list.prepend(3)
 # p linked_list.at_index(0)
 # p linked_list.contains?(3)
 # p linked_list.find(1)
-linked_list.to_s
+print linked_list.to_s
