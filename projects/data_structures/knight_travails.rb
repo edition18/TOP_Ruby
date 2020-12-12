@@ -51,24 +51,15 @@ class Board
       # the very first move you are already checking if first move can reach the target
       # if not, then we will start moving into the second move
       # then we will look into the third move, then following
-      add_to_discovered_and_queue(current, discovered, queue)
+      add_queue(current, queue)
     end
   end
 
 
       
-  def add_to_discovered_and_queue(current, discovered, queue)
+  def add_queue(current, queue)
       current.possible_moves.each do |move|
       # see that for the current location, you execute possible moves
-      
-      next if discovered.include?(move) 
-      # for each of those move.. if discovered already go next
-      # this is searching all possible nodes
-      # our initial list of possible nodes is only from the perspective of first move on the first coord
-      
-      discovered << move
-      # if not already found, add to discovered
-
       queue << move
       # also, queue it to attempt a path
       # meaning, whatever u put to queue is a new Current coord
