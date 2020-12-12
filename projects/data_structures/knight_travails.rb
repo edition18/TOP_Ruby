@@ -7,10 +7,10 @@ POSSIBLE_MOVES = [[1, 2], [2, 1], [-1, 2], [-2, 1], # upward moves
 
 class Knight
   attr_accessor :coord, :adjacent_nodes, :node_prior_to_destination
-  def initialize(x,y)
-    @coord = [x,y]
+  def initialize(coord = nil, node_prior_to_destination = nil)
+    @coord = coord
     @adjacent_nodes = [] # looking for possible moves in relation to current coord
-    @node_prior_to_destination = nil
+    @node_prior_to_destination = node_prior_to_destination
   end
 
 
@@ -23,7 +23,9 @@ class Knight
       # when u .map , you take each of the elements (i.e. pairs of zip)
       # putting bounds between 0 - 7 means it will remain a legal move
       new_coord = move.zip(current_coord).map{ |x, y| x + y if (x + y).between?(0, 7) }
-      possible_coord.push(new_coord)
+
+      !new_coord.include?(nil) ? possible_coord.push(Knight.new(new_coord)) : ""
+      
     end
     return possible_coord
     # the idea is to generate ALL possible moves we could go to from the current spot
@@ -42,10 +44,13 @@ class Board
     # start to build the queue
     until queue.empty?
       current = queue.shift
+  
       # continuing queuing until u find a solution to the target
       # since this is a QUEUE, its FIFO
       return current if current.coord == target
-
+      # the very first move you are already checking if first move can reach the target
+      # if not, then we will start moving into the second move
+      # then we will look into the third move, then following
       add_to_discovered_and_queue(current, discovered, queue)
     end
   end
@@ -53,23 +58,17 @@ class Board
 
       
   def add_to_discovered_and_queue(current, discovered, queue)
-    # for each possible_moves left
-    # check if discovered already has it
-    # if not, bring it to discovered list
-    # also, queue it
-    
-    current.possible_moves.each do |move|
-      # see that on every each, possible_moves executes
-      # i.e. you generate a set of moves for the current location
+      current.possible_moves.each do |move|
+      # see that for the current location, you execute possible moves
       
-      next if discovered.include?(move)
-      # if that move is already discovered, go next
-      # i.e. you've already went there
-      # you cannot go repeat a route you've already tried
+      next if discovered.include?(move) 
+      # for each of those move.. if discovered already go next
+      # this is searching all possible nodes
+      # our initial list of possible nodes is only from the perspective of first move on the first coord
       
       discovered << move
-      # if not, add to discovered
-      # its a unique route
+      # if not already found, add to discovered
+
       queue << move
       # also, queue it to attempt a path
       # meaning, whatever u put to queue is a new Current coord
@@ -77,6 +76,28 @@ class Board
       move.node_prior_to_destination = current
       # stores the last node that u travelled to
     end
+  end
+
+  def knight_moves(start, target)
+    last_node = bfs(start, target)
+    return if last_node.nil?
+
+    path = retrieve_parent_nodes(last_node)
+    print_path(path)
+  end
+
+  def retrieve_parent_nodes(last_node)
+    path = [last_node]
+    until last_node.node_prior_to_destination.nil?
+      path.unshift(last_node.node_prior_to_destination)
+      last_node = last_node.node_prior_to_destination
+    end
+    path
+  end
+
+  def print_path(path)
+    puts "You made it in #{path.length - 1} moves! Here's your path:"
+    path.each { |vertice| p vertice.coord }
   end
 
 end
@@ -87,5 +108,5 @@ end
 
 
 
-p = Knight.new(3,5)
-p p.possible_moves
+x = Board.new
+x.knight_moves([3, 3], [4, 3])
