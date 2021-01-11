@@ -1,2 +1,2 @@
 language = "bash"
-run = "ruby ./projects/data_structures/knight_travails.rb"
+run = "ruby ./projects/data_structures/undirected_graph.rb"

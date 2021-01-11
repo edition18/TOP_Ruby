@@ -7,7 +7,7 @@ def bubble_sort(array)
         if array[k] < array[k + 1] # current lesser than next
   
         else
-          temp = array[k]
+          temp = array[k] 
           array[k] = array[k + 1]
           array[k + 1] = temp
         end

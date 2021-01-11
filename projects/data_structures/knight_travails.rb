@@ -36,10 +36,6 @@ class Board
   def bfs(start,target)
     knight = Knight.new(start)
     # your starting point is already found, so enqueue it first
-
-    discovered = [knight]
-    #start to build the discovered list
-    # [2,1] [2,2] [3,2]
     queue = [knight]
     # start to build the queue
     until queue.empty?
@@ -58,19 +54,22 @@ class Board
 
       
   def add_queue(current, queue)
+      # current is a Knight object
       current.possible_moves.each do |move|
       # see that for the current location, you execute possible moves
+      # each possible move is a Knight object with a move coordinate
       queue << move
       # also, queue it to attempt a path
       # meaning, whatever u put to queue is a new Current coord
-      # meaning, you queue multiple moves FOLLOWING your first move from where you are at
+      # meaning, you queue multiple possible moves FOLLOWING your first move from where you are at
       move.node_prior_to_destination = current
-      # stores the last node that u travelled to
+      # in the .node_prior_to_destination you are saving another Knight Object with its current location (i.e before this current move)
     end
   end
 
   def knight_moves(start, target)
     last_node = bfs(start, target)
+    # bfs returns the last node visited
     return if last_node.nil?
 
     path = retrieve_parent_nodes(last_node)
@@ -80,15 +79,18 @@ class Board
   def retrieve_parent_nodes(last_node)
     path = [last_node]
     until last_node.node_prior_to_destination.nil?
+      #keep going until node to prior is nil
       path.unshift(last_node.node_prior_to_destination)
+      # unshift is to add the node prior to front of queue
       last_node = last_node.node_prior_to_destination
+      # continue going down the historical nodes went into
     end
-    path
+    return path
   end
 
   def print_path(path)
     puts "You made it in #{path.length - 1} moves! Here's your path:"
-    path.each { |vertice| p vertice.coord }
+    path.each { |knight_object| p knight_object.coord }
   end
 
 end

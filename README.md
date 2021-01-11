@@ -12,4 +12,6 @@
   8. Hangman => classic game, also added save/load of game states 
   9. data_structures
     1. linked_list => linked_list as well as various methods to manipulate them
+    2. binary_tree_search => BST
+    3. knight_travails => undirected graphs
 2. ruby-exercises => couple of simple exercises on ruby
